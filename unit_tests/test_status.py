@@ -1,7 +1,12 @@
 import mock
 import test_utils
 
-import ceph_hooks as hooks
+from mock import patch
+
+with patch('charmhelpers.contrib.hardening.harden.harden') as mock_dec:
+    mock_dec.side_effect = (lambda *dargs, **dkwargs: lambda f:
+                            lambda *args, **kwargs: f(*args, **kwargs))
+    import ceph_hooks as hooks
 
 TO_PATCH = [
     'status_set',

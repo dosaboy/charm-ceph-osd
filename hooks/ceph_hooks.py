@@ -55,6 +55,7 @@ from charmhelpers.contrib.network.ip import (
 )
 
 from charmhelpers.contrib.charmsupport import nrpe
+from charmhelpers.contrib.hardening.harden import harden
 
 hooks = Hooks()
 
@@ -67,6 +68,7 @@ def install_upstart_scripts():
 
 
 @hooks.hook('install.real')
+@harden()
 def install():
     add_source(config('source'), config('key'))
     apt_update(fatal=True)
@@ -157,6 +159,7 @@ def check_overlap(journaldevs, datadevs):
 
 
 @hooks.hook('config-changed')
+@harden()
 def config_changed():
     # Pre-flight checks
     if config('osd-format') not in ceph.DISK_FORMATS:
@@ -268,6 +271,7 @@ def mon_relation():
 
 
 @hooks.hook('upgrade-charm')
+@harden()
 def upgrade_charm():
     if get_fsid() and get_auth():
         emit_cephconf()
@@ -316,6 +320,12 @@ def assess_status():
     else:
         status_set('active',
                    'Unit is ready ({} OSD)'.format(len(running_osds)))
+
+
+@hooks.hook('update-status')
+@harden()
+def update_status():
+    log('Updating status.')
 
 
 if __name__ == '__main__':

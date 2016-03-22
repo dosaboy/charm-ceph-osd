@@ -1,10 +1,17 @@
 import logging
 import unittest
 import os
+import sys
 import yaml
 
 from contextlib import contextmanager
 from mock import patch, MagicMock
+
+# python-apt is not installed as part of test-requirements but is imported by
+# some charmhelpers modules so create a fake import.
+mock_apt = MagicMock()
+sys.modules['apt'] = mock_apt
+mock_apt.apt_pkg = MagicMock()
 
 
 def load_config():
